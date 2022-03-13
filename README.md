@@ -21,6 +21,7 @@ based on the requested URI.
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/tunabay/go-cache"
 )
@@ -29,7 +30,7 @@ type MyResource struct {
 	data string
 }
 
-func CreateResource(key string) (*Resource, time.Time, error) {
+func CreateResource(key string) (*MyResource, time.Time, error) {
 	time.Sleep(time.Second >> 2) // slow creation
 	return &MyResource{data: "data " + key}, time.Time{}, nil
 }
@@ -53,13 +54,15 @@ func main() {
 	for i := 0; i < 12; i++ {
 		wg.Add(1)
 		go func(n int) {
-			key := fmt.Sprintf("key-%d", n & 3)
+			defer wg.Done()
+			key := fmt.Sprintf("key-%d", n&3)
 			showResource(key)
 		}(i)
 	}
 	wg.Wait()
 }
 ```
+[Run in Go Playground](https://go.dev/play/p/AqOBD94Ivsk?v=gotip)
 
 ## Documentation and more examples
 
